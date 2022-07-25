@@ -1,4 +1,7 @@
 // D
+import std.array;
+import std.conv;
+import std.json;
 import std.getopt;
 import std.net.curl;
 import std.stdio;
@@ -13,6 +16,10 @@ struct input {
 void main(string[] args) {
     input user_inputs;
     string result = "";
+    JSONValue result_json = null;
+    string new_commit = "";
+    string old_commit = new_commit;
+    string new_commit_date = "";
 
     auto helpInformation = getopt
     (
@@ -34,7 +41,23 @@ void main(string[] args) {
         result ~= cast(char[]) data; 
         return data.length;
     };
-    client.perform();
 
-    //writeln(result);
+    while(1) {
+        client.perform();
+        result_json = parseJSON(result);
+        if(result_json.type == JSON_TYPE.ARRAY)
+            new_commit = to!string(result_json[0]["sha"]);
+            if(new_commit != old_commit) {
+                writeln("[IntegrateD] Entering CI.");
+                writeln("[IntegrateD] Old commit on "~
+                    user_inputs.github_repo~
+                    " is "~
+                    old_commit);
+                writeln("[IntegrateD] New commit on "~
+                    user_inputs.github_repo~
+                    " is "~
+                    new_commit);
+                old_commit = new_commit;
+            }      
+    }
 }

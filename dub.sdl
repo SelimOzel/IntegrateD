@@ -1,0 +1,5 @@
+name "integrated"
+description "Continuous integration and deployment written in D language."
+authors "selim"
+copyright "Copyright © 2022, selim"
+license "proprietary"

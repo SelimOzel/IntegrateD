@@ -45,8 +45,9 @@ void main(string[] args) {
     while(1) {
         client.perform();
         result_json = parseJSON(result);
-        if(result_json.type == JSON_TYPE.ARRAY)
+        if(result_json.type == JSON_TYPE.ARRAY) {
             new_commit = to!string(result_json[0]["sha"]);
+            new_commit_date = to!string(result_json[0]["commit"]["author"]["date"]);
             if(new_commit != old_commit) {
                 writeln("[IntegrateD] Entering CI.");
                 writeln("[IntegrateD] Old commit on "~
@@ -56,8 +57,10 @@ void main(string[] args) {
                 writeln("[IntegrateD] New commit on "~
                     user_inputs.github_repo~
                     " is "~
-                    new_commit);
+                    new_commit ~ 
+                    " time stamp is " ~ new_commit_date);
                 old_commit = new_commit;
             }      
+        }
     }
 }

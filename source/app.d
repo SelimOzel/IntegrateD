@@ -40,10 +40,11 @@ void main(string[] args) {
         config.stopOnFirstNonOption
     ); 
 
-    auto client = HTTP(
-        "https://api.github.com/repos/"~
+    string http_call = "https://api.github.com/repos/"~
         user_inputs.github_name~"/"~user_inputs.github_repo~
-        "/commits");
+        "/commits";
+    writeln("[IntegrateD] Using the follwong http call: "~http_call);
+    auto client = HTTP(http_call);
     client.addRequestHeader("Authorization", 
         "token " ~ user_inputs.oauth_token);
     client.onReceive = (ubyte[] data) {

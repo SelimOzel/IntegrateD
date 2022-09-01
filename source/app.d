@@ -60,16 +60,26 @@ void main(string[] args) {
             new_commit_date = to!string(
                 github_response_json[0]["commit"]["author"]["date"]);
             if(new_commit != old_commit) {
-                writeln("[IntegrateD] Entering CI.");
-                writeln("[IntegrateD] Old commit on "~
+                if(old_commit == "") {
+                    writeln("[IntegrateD] Entering CI.");
+                    writeln("[IntegrateD] Latest commit: "~
+                        user_inputs.github_repo~
+                        " is "~
+                        new_commit ~ 
+                        " time stamp is " ~ new_commit_date);
+                } 
+                else {
+                writeln("[IntegrateD] Old commit: "~
                     user_inputs.github_repo~
                     " is "~
                     old_commit);
-                writeln("[IntegrateD] New commit on "~
+                writeln("[IntegrateD] New commit: "~
                     user_inputs.github_repo~
                     " is "~
                     new_commit ~ 
-                    " time stamp is " ~ new_commit_date);
+                    " time stamp is " ~ new_commit_date);                    
+                }
+
                 old_commit = new_commit;
                 if(
                     user_inputs.ci_path != "" &&

@@ -23,6 +23,12 @@ void main(string[] args) {
     string old_commit = new_commit;
     string new_commit_date = "";
 
+    if(args.length == 1) 
+    {
+        writeln("No input arguments. Exiting IntegrateD.");
+        return;
+    } 
+
     auto helpInformation = getopt
     (
         args,

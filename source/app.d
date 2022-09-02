@@ -45,7 +45,7 @@ void main(string[] args) {
         "/commits";
     writeln("[IntegrateD] Http call: "~http_call);
     writeln("[IntegrateD] Script:" ~ user_inputs.ci_script);
-    writeln("[Integrated] Workspace: " ~ user_inputs.ci_path);
+    writeln("[Integrated] Shell path: " ~ user_inputs.ci_path);
     auto client = HTTP(http_call);
     client.addRequestHeader("Authorization", 
         "token " ~ user_inputs.oauth_token);
@@ -93,6 +93,7 @@ void main(string[] args) {
                         null,
                         Config.none,
                         size_t.max,
+                        null,
                         user_inputs.ci_path);
                     writeln(result.output);  
                     writeln("[IntegrateD] CI finished.");

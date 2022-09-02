@@ -43,7 +43,9 @@ void main(string[] args) {
     string http_call = "https://api.github.com/repos/"~
         user_inputs.github_name~"/"~user_inputs.github_repo~
         "/commits";
-    writeln("[IntegrateD] Using the follwong http call: "~http_call);
+    writeln("[IntegrateD] Http call: "~http_call);
+    writeln("[IntegrateD] Script:" ~ user_inputs.ci_script);
+    writeln("[Integrated] Workspace: " ~ user_inputs.ci_path);
     auto client = HTTP(http_call);
     client.addRequestHeader("Authorization", 
         "token " ~ user_inputs.oauth_token);

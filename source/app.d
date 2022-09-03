@@ -60,11 +60,11 @@ void main(string[] args) {
     client.perform();
     github_response_json = parseJSON(github_response);
     if(github_response_json.type == JSON_TYPE.ARRAY) {
-      auto pid_garbage = execute(["pidof", user_inputs.kill_list]);
-      if(pid_garbage.output!= null) execute(["kill", pid_garbage.output]);
       new_commit = to!string(github_response_json[0]["sha"]);
       new_commit_date = to!string(github_response_json[0]["commit"]["author"]["date"]);
       if(new_commit != old_commit) {
+        auto pid_garbage = execute(["pidof", user_inputs.kill_list]);
+        if(pid_garbage.output!= null) execute(["kill", pid_garbage.output]);
         if(old_commit == "") {
           writeln("[IntegrateD] Latest commit: "~
             user_inputs.github_repo ~ " is "~ new_commit ~ " time stamp is " ~ new_commit_date);

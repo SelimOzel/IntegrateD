@@ -17,11 +17,13 @@ struct input {
 
 void main(string[] args) {
   input user_inputs;
-  string github_response = "";
   JSONValue github_response_json = null;
-  string new_commit = "";
-  string old_commit = new_commit;
-  string new_commit_date = "";
+  string 
+    new_commit = "", 
+    old_commit = new_commit, 
+    new_commit_date = "",
+    github_response = "",
+    http_call = "";
 
   if(args.length == 1) 
   {
@@ -40,12 +42,9 @@ void main(string[] args) {
     config.stopOnFirstNonOption
   ); 
 
-  string http_call = "https://api.github.com/repos/"~
+  http_call = "https://api.github.com/repos/"~
     user_inputs.github_name~"/"~user_inputs.github_repo~
     "/commits";
-  writeln("[IntegrateD] Http call: "~http_call);
-  writeln("[IntegrateD] Script:" ~ user_inputs.ci_script);
-  writeln("[Integrated] Shell path: " ~ user_inputs.ci_path);
   auto client = HTTP(http_call);
   client.addRequestHeader("Authorization", 
     "token " ~ user_inputs.oauth_token);
@@ -53,6 +52,10 @@ void main(string[] args) {
     github_response ~= cast(char[]) data; 
     return data.length;
   };
+
+  writeln("[IntegrateD] Http call: "~http_call);
+  writeln("[IntegrateD] Script: " ~ user_inputs.ci_script);
+  writeln("[Integrated] Shell path: " ~ user_inputs.ci_path);
 
   while(1) {
     client.perform();
@@ -92,8 +95,7 @@ void main(string[] args) {
               user_inputs.ci_script,
               null,
               Config.none, 
-              user_inputs.ci_path);
-            writeln("[Integrated] PID of ci script: "~to!string(result));                   
+              user_inputs.ci_path);                  
           }
           catch(ProcessException pe) {
             writeln(pe.message());

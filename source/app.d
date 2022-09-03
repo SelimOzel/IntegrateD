@@ -13,7 +13,8 @@ struct input {
     github_repo = "",
     oauth_token = "",
     ci_path = "",
-    ci_script = "";
+    ci_script = "",
+    kill_list = "";
 }
 
 void main(string[] args) {
@@ -37,11 +38,14 @@ void main(string[] args) {
     "oauth_token", &user_inputs.oauth_token,    
     "ci_path", &user_inputs.ci_path, 
     "ci_script", &user_inputs.ci_script,   
+    "kill_list", &user_inputs.kill_list,
     config.stopOnFirstNonOption); 
   if ( user_inputs.ci_path == "" || user_inputs.ci_script == "" ) {
     writeln("CI path or CI script not given. Exiting IntegrateD.");
     return;
   }
+  auto pid_garbage = execute(["pidof", user_inputs.kill_list]);
+  if(pid_garbage.output!= null) execute(["kill", pid_garbage.output]);
   http_call = "https://api.github.com/repos/"~
     user_inputs.github_name~"/"~user_inputs.github_repo~
     "/commits";
@@ -73,12 +77,12 @@ void main(string[] args) {
         }
         old_commit = new_commit;
         write("\033[1;32m\n");  
-        auto pid = spawnShell(
+        auto pid_ci = spawnShell(
           user_inputs.ci_script,
           null,
           Config.none, 
           user_inputs.ci_path);  
-        wait(pid);                
+        wait(pid_ci);                
         write("\033[1;37m\n");
       }      
     } // github response

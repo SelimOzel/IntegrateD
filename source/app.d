@@ -44,8 +44,6 @@ void main(string[] args) {
     writeln("CI path or CI script not given. Exiting IntegrateD.");
     return;
   }
-  auto pid_garbage = execute(["pidof", user_inputs.kill_list]);
-  if(pid_garbage.output!= null) execute(["kill", pid_garbage.output]);
   http_call = "https://api.github.com/repos/"~
     user_inputs.github_name~"/"~user_inputs.github_repo~
     "/commits";
@@ -62,6 +60,8 @@ void main(string[] args) {
     client.perform();
     github_response_json = parseJSON(github_response);
     if(github_response_json.type == JSON_TYPE.ARRAY) {
+      auto pid_garbage = execute(["pidof", user_inputs.kill_list]);
+      if(pid_garbage.output!= null) execute(["kill", pid_garbage.output]);
       new_commit = to!string(github_response_json[0]["sha"]);
       new_commit_date = to!string(github_response_json[0]["commit"]["author"]["date"]);
       if(new_commit != old_commit) {

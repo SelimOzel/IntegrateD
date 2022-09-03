@@ -88,15 +88,20 @@ void main(string[] args) {
                     user_inputs.ci_path != "" &&
                     user_inputs.ci_script != "") 
                 {
-                    auto result = executeShell(
-                        user_inputs.ci_script,
-                        null,
-                        Config.none,
-                        size_t.max,
-                        null,
-                        user_inputs.ci_path);
-                    writeln(result.output);  
-                    writeln("[IntegrateD] CI finished.");
+                    try {
+                        auto result = executeShell(
+                            user_inputs.ci_script,
+                            null,
+                            Config.none,
+                            size_t.max,
+                            null,
+                            user_inputs.ci_path);
+                        writeln(result.output);  
+                        writeln("[IntegrateD] CI finished.");                    
+                    }
+                    catch(ProcessException pe) {
+                        writeln(pe.message());
+                    }
                 }
                 else writeln("[IntegrateD] CI script or path not found.");
             }      

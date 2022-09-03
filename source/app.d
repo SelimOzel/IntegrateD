@@ -88,12 +88,10 @@ void main(string[] args) {
           user_inputs.ci_script != "") 
         {
           try {
-            auto result = executeShell(
+            auto result = spawnShell(
               user_inputs.ci_script,
               null,
-              Config.none,
-              size_t.max,
-              null,
+              Config.none, 
               user_inputs.ci_path);
             writeln(result.output);  
             writeln("[IntegrateD] CI finished.");                    

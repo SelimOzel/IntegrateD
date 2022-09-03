@@ -93,8 +93,7 @@ void main(string[] args) {
               null,
               Config.none, 
               user_inputs.ci_path);
-            writeln(result.output);  
-            writeln("[IntegrateD] CI finished.");                    
+            writeln("[Integrated] PID of ci script: "~to!string(result));                   
           }
           catch(ProcessException pe) {
             writeln(pe.message());

@@ -64,7 +64,12 @@ void main(string[] args) {
       new_commit_date = to!string(github_response_json[0]["commit"]["author"]["date"]);
       if(new_commit != old_commit) {
         auto pid_garbage = execute(["pidof", user_inputs.kill_list]);
-        if(pid_garbage.output!= null) execute(["kill", pid_garbage.output]);
+        if(pid_garbage.output!= null) {
+	  string pid_garbage_str = to!string(pid_garbage.output);
+	  pid_garbage_str = pid_garbage_str[0 .. pid_garbage_str.length - 1];
+	  auto pid_kill = execute(["kill", pid_garbage_str]);
+	  if (pid_kill.status != 0) writeln(pid_kill.output);
+	}
         if(old_commit == "") {
           writeln("[IntegrateD] Latest commit: "~
             user_inputs.github_repo ~ " is "~ new_commit ~ " time stamp is " ~ new_commit_date);
@@ -82,8 +87,6 @@ void main(string[] args) {
           null,
           Config.none, 
           user_inputs.ci_path);  
-        wait(pid_ci);                
-        write("\033[1;37m\n");
       }      
     } // github response
   } // ci loop

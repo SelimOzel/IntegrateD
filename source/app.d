@@ -8,11 +8,12 @@ import std.process;
 import std.stdio;
 
 struct input {
-  string github_name = "";
-  string github_repo = "";    
-  string oauth_token = "";
-  string ci_path = "";
-  string ci_script = "";
+  string 
+    github_name = "", 
+    github_repo = "",
+    oauth_token = "",
+    ci_path = "",
+    ci_script = "";
 }
 
 void main(string[] args) {
@@ -24,84 +25,61 @@ void main(string[] args) {
     new_commit_date = "",
     github_response = "",
     http_call = "";
-
-  if(args.length == 1) 
-  {
+  write("\033[1;31m");
+  if(args.length == 1) {
     writeln("No input arguments. Exiting IntegrateD.");
     return;
   } 
-
-  auto helpInformation = getopt
-  (
+  auto helpInformation = getopt (
     args,
     "github_name", &user_inputs.github_name,
     "github_repo", &user_inputs.github_repo,    
     "oauth_token", &user_inputs.oauth_token,    
     "ci_path", &user_inputs.ci_path, 
     "ci_script", &user_inputs.ci_script,   
-    config.stopOnFirstNonOption
-  ); 
-
+    config.stopOnFirstNonOption); 
+  if ( user_inputs.ci_path == "" || user_inputs.ci_script == "" ) {
+    writeln("CI path or CI script not given. Exiting IntegrateD.");
+    return;
+  }
   http_call = "https://api.github.com/repos/"~
     user_inputs.github_name~"/"~user_inputs.github_repo~
     "/commits";
   auto client = HTTP(http_call);
-  client.addRequestHeader("Authorization", 
-    "token " ~ user_inputs.oauth_token);
+  client.addRequestHeader("Authorization", "token " ~ user_inputs.oauth_token);
   client.onReceive = (ubyte[] data) {
     github_response ~= cast(char[]) data; 
     return data.length;
   };
-
-  writeln("[IntegrateD] Http call: "~http_call);
+  writeln("\033[1;33m[IntegrateD] Http call: "~http_call);
   writeln("[IntegrateD] Script: " ~ user_inputs.ci_script);
   writeln("[Integrated] Shell path: " ~ user_inputs.ci_path);
-
   while(1) {
     client.perform();
     github_response_json = parseJSON(github_response);
     if(github_response_json.type == JSON_TYPE.ARRAY) {
-      new_commit = to!string(
-        github_response_json[0]["sha"]);
-      new_commit_date = to!string(
-        github_response_json[0]["commit"]["author"]["date"]);
+      new_commit = to!string(github_response_json[0]["sha"]);
+      new_commit_date = to!string(github_response_json[0]["commit"]["author"]["date"]);
       if(new_commit != old_commit) {
         if(old_commit == "") {
-          writeln("[IntegrateD] Entering CI.");
           writeln("[IntegrateD] Latest commit: "~
-            user_inputs.github_repo~
-            " is "~
-            new_commit ~ 
-            " time stamp is " ~ new_commit_date);
+            user_inputs.github_repo ~ " is "~ new_commit ~ " time stamp is " ~ new_commit_date);
         } 
         else {
-        writeln("[IntegrateD] Old commit: "~
-          user_inputs.github_repo~
-          " is "~
-          old_commit);
-        writeln("[IntegrateD] New commit: "~
-          user_inputs.github_repo~
-          " is "~
-          new_commit ~ 
-          " time stamp is " ~ new_commit_date);                    
+          writeln("[IntegrateD] Old commit: "~
+            user_inputs.github_repo~ " is "~ old_commit);
+          writeln("[IntegrateD] New commit: "~
+            user_inputs.github_repo~ " is "~ new_commit ~ " time stamp is " ~ new_commit_date);                 
         }
         old_commit = new_commit;
-        if(
-          user_inputs.ci_path != "" &&
-          user_inputs.ci_script != "") 
-        {
-          try {
-            auto result = spawnShell(
-              user_inputs.ci_script,
-              null,
-              Config.none, 
-              user_inputs.ci_path);                  
-          }
-          catch(ProcessException pe) {
-            writeln(pe.message());
-          }
-        }
-        else writeln("[IntegrateD] CI script or path not found.");
+        write("\033[1;32m\n");  
+        auto pid = spawnShell(
+          user_inputs.ci_script,
+          null,
+          Config.none, 
+          user_inputs.ci_path);  
+        wait(pid);                
+        write("\033[1;37m\n");
       }      
     } // github response
   } // ci loop
